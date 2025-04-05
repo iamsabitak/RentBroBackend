@@ -4,7 +4,7 @@ import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 
-dotenv.config();
+// dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -19,6 +19,7 @@ const db = mysql.createConnection({
   password: "P@ssw0rd",
   database: "user_auth",
 });
+
 // Connect to MySQL Database
 db.connect((err) => {
   if (err) {
@@ -32,63 +33,49 @@ db.connect((err) => {
 
 // Sign Up
 app.post("/signup", async (req, res) => {
-  console.log("Headers:", req.headers);
-  console.log("Body:", req.body); // Check the request body
+  console.log("Received data:", req.body); // Log the request body
 
-  const { firstName, lastName, email, password } = req.body;
-
-  if (!firstName || !lastName || !email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
+  // Validate the incoming request
+  if (
+    !req.body.firstName ||
+    !req.body.lastName ||
+    !req.body.email ||
+    !req.body.password
+  ) {
+    return res.json({
+      message: "All fields are required",
+      receivedData: req.body, // Return the received data
+    });
   }
 
-  try {
-    const hashedPassword = await bcrypt.hash(password, 10);
+  // Hash the password before storing it
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
 
-    const sql =
-      "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
-    db.query(
-      sql,
-      [firstName, lastName, email, hashedPassword],
-      (err, result) => {
-        if (err) {
-          return res
-            .status(500)
-            .json({ error: "Email already exists or error in database" });
-        }
-        res.json({ message: "User registered successfully!" });
-      }
-    );
-  } catch (err) {
-    res.status(500).json({ error: "Server error" });
-  }
+  const sql = `INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`;
+  const values = [
+    req.body.firstName,
+    req.body.lastName,
+    req.body.email,
+    hashedPassword,
+  ];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("❌ Error inserting data:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    console.log("✅ User signed up:", result);
+    return res.json({
+      message: "User signed up successfully",
+      insertedData: result, // Include the result of the insertion
+    });
+  });
 });
 
 // Sign In
 app.post("/signin", (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
-
-  const sql = "SELECT * FROM users WHERE email = ?";
-  db.query(sql, [email], async (err, results) => {
-    if (err || results.length === 0) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    const user = results[0];
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    res.json({
-      message: "Login successful!",
-      user: { id: user.id, email: user.email },
-    });
-  });
+  console.log("signin");
 });
 
 // Start Server
