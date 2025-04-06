@@ -75,7 +75,42 @@ app.post("/signup", async (req, res) => {
 
 // Sign In
 app.post("/signin", (req, res) => {
-  console.log("signin");
+  const { email, password } = req.body;
+
+  // Validate the incoming request
+  if (!email || !password) {
+    return res.status(400).json({ message: "Email and password are required" });
+  }
+
+  const sql = `SELECT * FROM users WHERE email = ?`;
+
+  db.query(sql, [email], async (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching user:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    const user = results[0];
+
+    // Compare the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: "Invalid email or password" });
+    }
+
+    // Remove password before sending user info back
+    const { password: _, ...userWithoutPassword } = user;
+
+    return res.json({
+      message: "Sign in successful",
+      user: userWithoutPassword,
+    });
+  });
 });
 
 // Start Server
