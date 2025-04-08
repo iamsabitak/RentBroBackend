@@ -73,11 +73,9 @@ app.post("/signup", async (req, res) => {
   });
 });
 
-// Sign In
 app.post("/signin", (req, res) => {
   const { email, password } = req.body;
 
-  // Validate the incoming request
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
   }
@@ -95,18 +93,15 @@ app.post("/signin", (req, res) => {
     }
 
     const user = results[0];
-
-    // Compare the hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    // Remove password before sending user info back
     const { password: _, ...userWithoutPassword } = user;
 
-    return res.json({
+    return res.status(200).json({
       message: "Sign in successful",
       user: userWithoutPassword,
     });
