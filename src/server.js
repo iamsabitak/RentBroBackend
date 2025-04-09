@@ -37,8 +37,8 @@ app.post("/signup", async (req, res) => {
 
   // Validate the incoming request
   if (
-    !req.body.firstName ||
-    !req.body.lastName ||
+    !req.body.first_Name ||
+    !req.body.last_Name ||
     !req.body.email ||
     !req.body.password
   ) {
@@ -53,8 +53,8 @@ app.post("/signup", async (req, res) => {
 
   const sql = `INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`;
   const values = [
-    req.body.firstName,
-    req.body.lastName,
+    req.body.first_Name,
+    req.body.last_Name,
     req.body.email,
     hashedPassword,
   ];
