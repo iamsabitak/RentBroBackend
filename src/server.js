@@ -33,42 +33,47 @@ db.connect((err) => {
 
 // Sign Up
 app.post("/signup", async (req, res) => {
-  console.log("Received data:", req.body); // Log the request body
+  console.log("Received data:", req.body);
 
-  // Validate the incoming request
-  if (
-    !req.body.first_Name ||
-    !req.body.last_Name ||
-    !req.body.email ||
-    !req.body.password
-  ) {
+  const { first_Name, last_Name, email, password } = req.body;
+
+  if (!first_Name || !last_Name || !email || !password) {
     return res.json({
       message: "All fields are required",
-      receivedData: req.body, // Return the received data
+      receivedData: req.body,
     });
   }
 
-  // Hash the password before storing it
-  const hashedPassword = await bcrypt.hash(req.body.password, 10);
-
-  const sql = `INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`;
-  const values = [
-    req.body.first_Name,
-    req.body.last_Name,
-    req.body.email,
-    hashedPassword,
-  ];
-
-  db.query(sql, values, (err, result) => {
+  // Check if email already exists
+  const checkSql = `SELECT * FROM users WHERE email = ?`;
+  db.query(checkSql, [email], async (err, results) => {
     if (err) {
-      console.error("❌ Error inserting data:", err);
-      return res.status(500).json({ error: "Database error" });
+      console.error("❌ Error checking email:", err);
+      return res
+        .status(500)
+        .json({ error: "Database error during email check" });
     }
 
-    console.log("✅ User signed up:", result);
-    return res.json({
-      message: "User signed up successfully",
-      insertedData: result, // Include the result of the insertion
+    if (results.length > 0) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // If email doesn't exist, hash password and insert
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const insertSql = `INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)`;
+    const values = [first_Name, last_Name, email, hashedPassword];
+
+    db.query(insertSql, values, (err, result) => {
+      if (err) {
+        console.error("❌ Error inserting data:", err);
+        return res.status(500).json({ error: "Database error during signup" });
+      }
+
+      console.log("✅ User signed up:", result);
+      return res.json({
+        message: "User signed up successfully",
+        insertedData: result,
+      });
     });
   });
 });
