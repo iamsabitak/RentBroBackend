@@ -4,7 +4,7 @@ import mysql from "mysql2";
 import bcrypt from "bcryptjs";
 import cors from "cors";
 
-// dotenv.config();
+dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
