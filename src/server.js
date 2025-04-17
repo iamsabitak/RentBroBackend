@@ -128,6 +128,23 @@ app.get("/rooms", (req, res) => {
     res.json(results);
   });
 });
+// Get room by ID
+app.get("/rooms/:id", (req, res) => {
+  const roomId = req.params.id;
+  const sql = "SELECT * FROM rooms WHERE id = ?";
+  db.query(sql, [roomId], (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching room:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: "Room not found" });
+    }
+
+    res.json(results[0]);
+  });
+});
 
 // Start Server
 app.listen(port, () => {
