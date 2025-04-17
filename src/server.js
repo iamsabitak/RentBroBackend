@@ -119,6 +119,87 @@ app.post("/signin", (req, res) => {
   });
 });
 
+const roomData = [
+  {
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "Cozy Studio Apartment",
+    description:
+      "Perfect for students. Includes Wi-Fi, water, and electricity.",
+    price: "Rs. 15,000/month",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "Cozy Studio Apartment",
+    description:
+      "Perfect for students. Includes Wi-Fi, water, and electricity.",
+    price: "Rs. 15,000/month",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "Cozy Studio Apartment",
+    description:
+      "Perfect for students. Includes Wi-Fi, water, and electricity.",
+    price: "Rs. 15,000/month",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "Cozy Studio Apartment",
+    description:
+      "Perfect for students. Includes Wi-Fi, water, and electricity.",
+    price: "Rs. 15,000/month",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    title: "Cozy Studio Apartment",
+    description:
+      "Perfect for students. Includes Wi-Fi, water, and electricity.",
+    price: "Rs. 15,000/month",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1572881940103-8eeb7f5e4a78",
+    title: "Spacious 2BHK Flat",
+    description: "Ideal for families with ample parking and security.",
+    price: "Rs. 30,000/month",
+    link: "https://example.com/2bhk-flat",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1570129477492-45c003edd2be",
+    title: "Single Room for Rent",
+    description: "Affordable and comfortable room for working professionals.",
+    price: "Rs. 10,000/month",
+    link: "https://example.com/single-room",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1588222790975-c4f700f8e536",
+    title: "Luxury 3BHK Penthouse",
+    description: "Fully furnished with a beautiful view of the city skyline.",
+    price: "Rs. 50,000/month",
+    link: "https://example.com/luxury-penthouse",
+  },
+  {
+    image: "https://images.unsplash.com/photo-1531781466357-5a47efb73ff2",
+    title: "Budget Studio Room",
+    description: "A compact and affordable studio room with basic amenities.",
+    price: "Rs. 8,000/month",
+    link: "https://example.com/budget-studio",
+  },
+];
+
+app.get("/rooms", (req, res) => {
+  res.json(roomData);
+});
+
+// app.get("/rooms", (req, res) => {
+//   const sql = "SELECT * FROM rooms"; // assuming you have a 'rooms' table
+//   db.query(sql, (err, results) => {
+//     if (err) {
+//       console.error("❌ Failed to fetch rooms:", err);
+//       return res.status(500).json({ error: "Database error" });
+//     }
+//     res.json(results);
+//   });
+// });
+
 // Start Server
 app.listen(port, () => {
   console.log(`🚀 Server running on http://localhost:${port}`);
